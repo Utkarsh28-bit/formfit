@@ -40,21 +40,30 @@ val exerciseList = listOf(
     ),
 
     Exercise(
-        name = "Lateral Raises",
-        reps = "3 x 15",
-        muscles = "Side Delts",
+        name = "Arnold Press",
+        reps = "3 x 12",
+        muscles = "Deltoids",
         gifUrl = "",
         category = "Push",
-        steps = listOf("Raise arms", "Control movement")
+        steps = listOf("Rotate wrists while pressing", "Lower slowly")
     ),
 
     Exercise(
-        name = "Tricep Pushdown",
+        name = "Cable Chest Fly",
         reps = "3 x 15",
+        muscles = "Chest",
+        gifUrl = "",
+        category = "Push",
+        steps = listOf("Bring handles together", "Control return")
+    ),
+
+    Exercise(
+        name = "Overhead Tricep Extension",
+        reps = "3 x 12",
         muscles = "Triceps",
         gifUrl = "",
         category = "Push",
-        steps = listOf("Push cable down", "Control return")
+        steps = listOf("Lower behind head", "Extend arms upward")
     ),
 
     // 🔵 PULL DAY
@@ -95,12 +104,21 @@ val exerciseList = listOf(
     ),
 
     Exercise(
-        name = "Barbell Bicep Curl",
+        name = "Preacher Curl",
         reps = "3 x 12",
         muscles = "Biceps",
         gifUrl = "",
         category = "Pull",
-        steps = listOf("Curl bar up", "Lower slowly")
+        steps = listOf("Curl upward", "Lower slowly")
+    ),
+
+    Exercise(
+        name = "Cable Hammer Curl",
+        reps = "3 x 15",
+        muscles = "Biceps, Forearms",
+        gifUrl = "",
+        category = "Pull",
+        steps = listOf("Curl with neutral grip", "Control on way down")
     ),
 
     // 🟢 LEGS
@@ -120,5 +138,60 @@ val exerciseList = listOf(
         gifUrl = "",
         category = "Legs",
         steps = listOf("Hinge at hips", "Return upright")
+    ),
+
+    Exercise(
+        name = "Bulgarian Split Squat",
+        reps = "3 x 12 each leg",
+        muscles = "Quads, Glutes",
+        gifUrl = "",
+        category = "Legs",
+        steps = listOf("Place back foot on bench", "Lower front leg", "Push up")
+    ),
+
+    Exercise(
+        name = "Walking Lunges",
+        reps = "3 x 20 steps",
+        muscles = "Quads, Glutes",
+        gifUrl = "",
+        category = "Legs",
+        steps = listOf("Step forward", "Lower knee", "Push forward")
+    ),
+
+    Exercise(
+        name = "Seated Calf Raise",
+        reps = "4 x 15",
+        muscles = "Calves",
+        gifUrl = "",
+        category = "Legs",
+        steps = listOf("Raise heels upward", "Lower slowly")
+    ),
+
+    // 🟣 CORE
+    Exercise(
+        name = "Plank",
+        reps = "3 x 60 sec",
+        muscles = "Core",
+        gifUrl = "",
+        category = "Core",
+        steps = listOf("Keep body straight", "Engage core", "Hold position")
+    ),
+
+    Exercise(
+        name = "Hanging Leg Raise",
+        reps = "3 x 12",
+        muscles = "Lower Abs",
+        gifUrl = "",
+        category = "Core",
+        steps = listOf("Raise legs upward", "Lower slowly")
+    ),
+
+    Exercise(
+        name = "Russian Twist",
+        reps = "3 x 20",
+        muscles = "Obliques",
+        gifUrl = "",
+        category = "Core",
+        steps = listOf("Twist torso side to side")
     )
 )

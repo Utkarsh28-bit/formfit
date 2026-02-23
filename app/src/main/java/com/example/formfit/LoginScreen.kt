@@ -14,7 +14,47 @@ import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
 import kotlinx.coroutines.launch
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScrollDropdown(
+    label: String,
+    options: List<String>,
+    selectedValue: String,
+    onValueChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
 
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+
+        OutlinedTextField(
+            value = selectedValue,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item) },
+                    onClick = {
+                        onValueChange(item)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
 @Composable
 fun LoginScreen(navController: NavController) {
 
@@ -57,8 +97,29 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         CustomField(name, { name = it }, "Name")
-        CustomField(height, { height = it }, "Height (cm)")
-        CustomField(weight, { weight = it }, "Weight (kg)")
+        val heightOptions = (140..210).map { "$it cm" }
+        val weightOptions = (40..150).map { "$it kg" }
+        val ageOptions = (10..80).map { "$it" }
+
+        var selectedHeight by remember { mutableStateOf("170 cm") }
+        var selectedWeight by remember { mutableStateOf("70 kg") }
+        var selectedAge by remember { mutableStateOf("25") }
+
+        ScrollDropdown("Height", heightOptions, selectedHeight) {
+            selectedHeight = it
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        ScrollDropdown("Weight", weightOptions, selectedWeight) {
+            selectedWeight = it
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        ScrollDropdown("Age", ageOptions, selectedAge) {
+            selectedAge = it
+        }
         CustomField(allergy, { allergy = it }, "Allergy")
         CustomField(email, { email = it }, "Email")
 
@@ -82,20 +143,21 @@ fun LoginScreen(navController: NavController) {
             onClick = {
 
                 // ✅ Validation
-                val heightCm = height.toFloatOrNull()
-                val weightKg = weight.toFloatOrNull()
-
-                if (name.isBlank() || email.isBlank() || heightCm == null || weightKg == null) {
-                    return@Button
-                }
+                val heightCm = selectedHeight.replace(" cm", "").toFloat()
+                val weightKg = selectedWeight.replace(" kg", "").toFloat()
+                val ageValue = selectedAge.toInt()
 
                 val heightMeters = heightCm / 100f
                 val bmi = weightKg / (heightMeters * heightMeters)
+
+                val ageCategory = getAgeCategory(ageValue)
 
                 val profile = ProfileEntity(
                     name = name,
                     height = heightCm,
                     weight = weightKg,
+                    age = ageValue,
+                    ageCategory = ageCategory,
                     allergy = allergy,
                     email = email,
                     bmi = bmi

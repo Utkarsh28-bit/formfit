@@ -3,7 +3,7 @@ package com.example.formfit
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "profile")
 data class ProfileEntity(
 
     @PrimaryKey(autoGenerate = true)
@@ -12,6 +12,8 @@ data class ProfileEntity(
     val name: String,
     val height: Float,
     val weight: Float,
+    val age: Int,
+    val ageCategory: String,
     val allergy: String,
     val email: String,
     val bmi: Float

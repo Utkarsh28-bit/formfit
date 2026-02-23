@@ -11,47 +11,12 @@ import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
-
-// ✅ BMI CATEGORY
-fun getBmiCategory(bmi: Float): String {
-    return when {
-        bmi < 18.5 -> "Underweight"
-        bmi < 25 -> "Normal"
-        bmi < 30 -> "Overweight"
-        bmi < 35 -> "Obese (Class 1)"
-        bmi < 40 -> "Obese (Class 2)"
-        else -> "Extreme Obesity"
-    }
-}
-
-// ✅ BMI ADVICE
-fun getBmiAdvice(bmi: Float): String {
-    return when {
-        bmi < 18.5 ->
-            "You are underweight. Increase calorie intake and focus on strength training."
-
-        bmi < 25 ->
-            "You are in healthy weight range. Maintain balanced diet and regular workouts."
-
-        bmi < 30 ->
-            "You are overweight. Reduce sugar intake and increase cardio activity."
-
-        bmi < 35 ->
-            "Obesity level 1. Start structured fat loss program and calorie deficit diet."
-
-        bmi < 40 ->
-            "Obesity level 2. Medical consultation recommended."
-
-        else ->
-            "Severe obesity. Immediate medical intervention required."
-    }
-}
+import com.example.formfit.utils.*
 
 @Composable
 fun DashboardScreen(navController: NavController) {
 
     val context = LocalContext.current
-
     var profile by remember { mutableStateOf<ProfileEntity?>(null) }
 
     val db = remember {
@@ -64,6 +29,7 @@ fun DashboardScreen(navController: NavController) {
             .build()
     }
 
+    // Load profile from DB
     LaunchedEffect(Unit) {
         profile = db.profileDao().getProfile()
     }
@@ -77,7 +43,7 @@ fun DashboardScreen(navController: NavController) {
     ) {
 
         Text(
-            "Hi, ${profile?.name ?: "User"} 👋",
+            text = "Hi, ${profile?.name ?: "User"} 👋",
             color = Color.White,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
@@ -85,32 +51,36 @@ fun DashboardScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ✅ USE BMI HELPERS CORRECTLY
-        profile?.let {
+        profile?.let { user ->
 
-            val category = getBmiCategory(it.bmi)
-            val advice = getBmiAdvice(it.bmi)
-
+            val category = getBmiCategory(user.bmi)
+            val advice = getBmiAdvice(user.bmi)
+            val color = getBmiColor(user.bmi)
             InfoCard(
-                "BMI",
-                String.format("%.1f", it.bmi),
-                category
+                "Age",
+                "${user.age} Years",
+                user.ageCategory
+            )
+            InfoCard(
+                title = "BMI",
+                value = String.format("%.1f", user.bmi),
+                subtitle = category
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = advice,
-                color = Color.LightGray,
+                color = color,
                 fontSize = 14.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             InfoCard(
-                "Allergy",
-                if (it.allergy.isBlank()) "None" else it.allergy,
-                "Diet Adjusted"
+                title = "Allergy",
+                value = if (user.allergy.isBlank()) "None" else user.allergy,
+                subtitle = "Diet Adjusted"
             )
         }
 
@@ -138,7 +108,7 @@ fun DashboardScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            "Exercise Library",
+            text = "Exercise Library",
             color = Color.White,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
