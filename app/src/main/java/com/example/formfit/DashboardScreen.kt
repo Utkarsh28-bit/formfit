@@ -12,6 +12,41 @@ import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
 
+// ✅ BMI CATEGORY
+fun getBmiCategory(bmi: Float): String {
+    return when {
+        bmi < 18.5 -> "Underweight"
+        bmi < 25 -> "Normal"
+        bmi < 30 -> "Overweight"
+        bmi < 35 -> "Obese (Class 1)"
+        bmi < 40 -> "Obese (Class 2)"
+        else -> "Extreme Obesity"
+    }
+}
+
+// ✅ BMI ADVICE
+fun getBmiAdvice(bmi: Float): String {
+    return when {
+        bmi < 18.5 ->
+            "You are underweight. Increase calorie intake and focus on strength training."
+
+        bmi < 25 ->
+            "You are in healthy weight range. Maintain balanced diet and regular workouts."
+
+        bmi < 30 ->
+            "You are overweight. Reduce sugar intake and increase cardio activity."
+
+        bmi < 35 ->
+            "Obesity level 1. Start structured fat loss program and calorie deficit diet."
+
+        bmi < 40 ->
+            "Obesity level 2. Medical consultation recommended."
+
+        else ->
+            "Severe obesity. Immediate medical intervention required."
+    }
+}
+
 @Composable
 fun DashboardScreen(navController: NavController) {
 
@@ -50,17 +85,24 @@ fun DashboardScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // ✅ USE BMI HELPERS CORRECTLY
         profile?.let {
+
+            val category = getBmiCategory(it.bmi)
+            val advice = getBmiAdvice(it.bmi)
 
             InfoCard(
                 "BMI",
                 String.format("%.1f", it.bmi),
-                when {
-                    it.bmi < 18.5 -> "Underweight"
-                    it.bmi < 25 -> "Normal"
-                    it.bmi < 30 -> "Overweight"
-                    else -> "Obese"
-                }
+                category
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = advice,
+                color = Color.LightGray,
+                fontSize = 14.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
