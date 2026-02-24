@@ -8,7 +8,6 @@ interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(profile: ProfileEntity)
 
-    @Query("SELECT * FROM ProfileEntity LIMIT 1")
+    @Query("SELECT * FROM profile LIMIT 1")
     suspend fun getProfile(): ProfileEntity?
 }
-

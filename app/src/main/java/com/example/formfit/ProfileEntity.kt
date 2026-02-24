@@ -14,7 +14,10 @@ data class ProfileEntity(
     val weight: Float,
     val age: Int,
     val ageCategory: String,
+    val experience: String,
     val allergy: String,
     val email: String,
+    val password: String,
     val bmi: Float
+
 )
