@@ -2,149 +2,173 @@ package com.example.formfit
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.formfit.ui.theme.*
 
 @Composable
 fun DietScreen() {
-
     var selectedGoal by remember { mutableStateOf("Muscle Gain") }
-    var selectedType by remember { mutableStateOf("Non-Veg") }
+    var selectedType by remember { mutableStateOf("Veg") }
+
+    val milkSub = "Almond/Soy Milk"
+    val curdSub = "Vegan Yogurt/Dairy-free Curd"
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0B1423))
+            .background(BgDark)
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp) // Cleaner spacing
     ) {
+        // Header
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                "Indian Diet Planner 🇮🇳",
+                color = TextWhite,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                "Personalized for your Milk Allergy",
+                color = AccentBlue,
+                fontSize = 14.sp
+            )
+        }
 
-        Text(
-            "Indian Diet Planner 🇮🇳",
-            color = Color.White,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
+        // Goal Selection
+        GoalButtonRow(
+            selectedGoal = selectedGoal,
+            onGoalSelected = { selectedGoal = it }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Meals
+        val breakfast = buildBreakfast(selectedType, milkSub)
+        val lunch = buildLunch(curdSub)
+        val dinner = buildDinner(selectedGoal)
 
-        // 🔥 Goal Selection
-        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = { selectedGoal = "Muscle Gain" }) {
-                Text("Muscle Gain")
-            }
-            Button(onClick = { selectedGoal = "Fat Loss" }) {
-                Text("Fat Loss")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 🔥 Diet Type Selection
-        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = { selectedType = "Veg" }) {
-                Text("Veg")
-            }
-            Button(onClick = { selectedType = "Non-Veg" }) {
-                Text("Non-Veg")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            "Goal: $selectedGoal | Type: $selectedType",
-            color = Color.Green,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        val breakfast = if (selectedType == "Veg") {
-            """
-• Paneer Bhurji / Tofu Scramble
-• Moong Dal Chilla
-• Oats with Milk
-Protein: 30g
-            """.trimIndent()
-        } else {
-            """
-• 4 Egg Whites + 2 Whole Eggs
-• Oats / Multigrain Roti
-• 1 Glass Milk
-Protein: 35g
-            """.trimIndent()
-        }
-
-        val lunch = if (selectedType == "Veg") {
-            """
-• Rajma / Chole / Soya Chunk Curry
-• Brown Rice
-• 2 Roti
-• Salad
-Protein: 35g
-            """.trimIndent()
-        } else {
-            """
-• 150g Chicken Breast / Fish
-• Brown Rice
-• 2 Roti
-• Sabzi + Curd
-Protein: 40g
-            """.trimIndent()
-        }
-
-        val dinner = if (selectedGoal == "Fat Loss") {
-            """
-• Paneer / Chicken (150g)
-• Stir Fry Vegetables
-• Soup
-Low Carb | High Protein
-            """.trimIndent()
-        } else {
-            """
-• Paneer / Chicken (150g)
-• 1-2 Roti
-• Dal + Sabzi
-Balanced Muscle Meal
-            """.trimIndent()
-        }
-
-        MealCard("🌅 Breakfast", breakfast)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MealCard(
-            "🥤 Mid Meal",
-            """
-• Banana + Peanut Butter
-• OR Sprouts Chaat
-• OR Protein Shake
-Protein: 15-20g
-            """.trimIndent()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MealCard("🍛 Lunch", lunch)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MealCard(
-            "☕ Evening Snack",
-            """
-• Roasted Chana
-• Greek Yogurt
-• Black Coffee
-            """.trimIndent()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MealCard("🍽 Dinner", dinner)
-
-        Spacer(modifier = Modifier.height(30.dp))
+        MealCardDetailed("🌅 Breakfast", breakfast)
+        MealCardDetailed("🍛 Lunch", lunch)
+        MealCardDetailed("🍽 Dinner", dinner)
     }
 }
+
+// Extracted logic for cleaner composables
+@Composable
+private fun GoalButtonRow(
+    selectedGoal: String,
+    onGoalSelected: (String) -> Unit
+) {
+    Text(
+        "Fitness Goal",
+        color = TextWhite,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        GoalButton("Muscle Gain", selectedGoal == "Muscle Gain", Modifier.weight(1f)) {
+            onGoalSelected(it)
+        }
+        GoalButton("Fat Loss", selectedGoal == "Fat Loss", Modifier.weight(1f)) {
+            onGoalSelected(it)
+        }
+    }
+}
+
+@Composable
+fun GoalButton(
+    text: String,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: (String) -> Unit
+) {
+    Box(
+        modifier = modifier
+            .height(45.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isSelected) AccentBlue else CardDark)
+            .clickable { onClick(text) }
+            .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = TextWhite,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            fontSize = 14.sp // Added for consistency
+        )
+    }
+}
+
+@Composable
+fun MealCardDetailed(title: String, content: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp)),
+        colors = CardDefaults.cardColors(containerColor = CardDark),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                color = AccentBlue,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = content,
+                color = TextWhite.copy(alpha = 0.8f),
+                fontSize = 15.sp,
+                lineHeight = 20.sp
+            )
+        }
+    }
+}
+
+// Meal logic extracted for readability
+private fun buildBreakfast(selectedType: String, milkSub: String): String =
+    if (selectedType == "Veg") {
+        """
+        • Tofu Scramble / Moong Dal Chilla
+        • Oats with $milkSub
+        • Handful of Almonds
+        Protein: 28g
+        """.trimIndent()
+    } else {
+        """
+        • 4 Egg Whites + 1 Whole Egg
+        • Multigrain Roti
+        • 1 Cup Coffee with $milkSub
+        Protein: 32g
+        """.trimIndent()
+    }
+
+private fun buildLunch(curdSub: String): String = """
+    • Soya Chunk Curry / Dal Tadka
+    • Brown Rice or 2 Roti
+    • Big Bowl of Salad
+    • $curdSub (Plant-based)
+    Protein: 35g
+""".trimIndent()
+
+private fun buildDinner(selectedGoal: String): String =
+    if (selectedGoal == "Fat Loss") {
+        "• Roasted Paneer/Tofu (150g)\n• Stir Fry Broccoli & Capsicum\n• Clear Lentil Soup\nLow Carb | High Protein"
+    } else {
+        "• Soya/Tofu Curry\n• 2 Small Roti\n• Yellow Dal\nBalanced Muscle Meal"
+    }
+
