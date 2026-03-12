@@ -8,7 +8,7 @@ interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(profile: ProfileEntity)
 
-    // ✅ Match the tableName defined in ProfileEntity
-    @Query("SELECT * FROM profile_table LIMIT 1")
+    // ✅ FIX: Added "ORDER BY id DESC" to get your latest login data
+    @Query("SELECT * FROM profile_table ORDER BY id DESC LIMIT 1")
     suspend fun getProfile(): ProfileEntity?
 }

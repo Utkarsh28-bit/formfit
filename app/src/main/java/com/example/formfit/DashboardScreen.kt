@@ -79,6 +79,22 @@ fun DashboardScreen(navController: NavController) {
                 }
             }
         }
+        Spacer(Modifier.height(24.dp))
+
+        // ✅ RESTORED: The Action Buttons Row
+        // Inside DashboardScreen.kt
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ActionButton(Icons.Default.List, "Diet", Color(0xFF10B981), Modifier.weight(1f)) { navController.navigate("diet") }
+            ActionButton(Icons.Default.Info, "Stats", Color(0xFF8B5CF6), Modifier.weight(1f)) {}
+            // ✅ FIX: Added navigation to the AI Plan screen
+            ActionButton(Icons.Default.Star, "AI Plan", Color(0xFFEC4899), Modifier.weight(1f)) { navController.navigate("ai_plan") }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Workout Schedule
+        Text("Workout Schedule", color = TextWhite, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
 
         Spacer(Modifier.height(24.dp))
 
