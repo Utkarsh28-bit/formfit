@@ -12,7 +12,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource // ✅ Added import for local images
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
@@ -39,7 +41,6 @@ fun DashboardScreen(navController: NavController) {
     val db = AppDatabase.getDatabase(context)
     LaunchedEffect(Unit) { profile = db.profileDao().getProfile() }
 
-    // Ensure exerciseList is defined in your project
     val currentExercises = exerciseList.filter { it.category == selectedSplit }
 
     Column(modifier = Modifier.fillMaxSize().background(BgDark).verticalScroll(rememberScrollState()).padding(20.dp)) {
@@ -79,22 +80,15 @@ fun DashboardScreen(navController: NavController) {
                 }
             }
         }
+
         Spacer(Modifier.height(24.dp))
 
-        // ✅ RESTORED: The Action Buttons Row
-        // Inside DashboardScreen.kt
+        // Action Buttons Row
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionButton(Icons.Default.List, "Diet", Color(0xFF10B981), Modifier.weight(1f)) { navController.navigate("diet") }
             ActionButton(Icons.Default.Info, "Stats", Color(0xFF8B5CF6), Modifier.weight(1f)) {}
-            // ✅ FIX: Added navigation to the AI Plan screen
             ActionButton(Icons.Default.Star, "AI Plan", Color(0xFFEC4899), Modifier.weight(1f)) { navController.navigate("ai_plan") }
         }
-
-        Spacer(Modifier.height(24.dp))
-
-        // Workout Schedule
-        Text("Workout Schedule", color = TextWhite, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
 
         Spacer(Modifier.height(24.dp))
 
@@ -119,16 +113,36 @@ fun DashboardScreen(navController: NavController) {
 
         // Exercise List
         Text("Exercises", color = TextWhite, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+
         currentExercises.forEach { exercise ->
             GlassCard(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp).clickable {
-                    navController.navigate("exercise/${exercise.name}")
-                }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+                    .clickable {
+                        navController.navigate("exercise/${exercise.name}")
+                    }
             ) {
-                Column {
-                    Text(exercise.name, color = TextWhite, fontWeight = FontWeight.Bold)
-                    Text("${exercise.reps} reps", color = TextGrey, fontSize = 12.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    // ✅ FIX: Swapped AsyncImage for standard Image to use local drawables
+                    Image(
+                        painter = painterResource(id = exercise.imageRes),
+                        contentDescription = exercise.name,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(CardDark),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text(exercise.name, color = TextWhite, fontWeight = FontWeight.Bold)
+                        Text("${exercise.reps} reps • ${exercise.muscles}", color = TextGrey, fontSize = 12.sp)
+                    }
                 }
             }
         }
@@ -136,7 +150,6 @@ fun DashboardScreen(navController: NavController) {
 }
 
 // --- REUSABLE UI COMPONENTS ---
-
 @Composable
 fun GlassCard(
     modifier: Modifier = Modifier,

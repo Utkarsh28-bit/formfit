@@ -1,223 +1,128 @@
 package com.example.formfit
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image // ✅ Added this import
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource // ✅ Added this import
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
-import kotlinx.coroutines.delay
-import android.media.MediaPlayer
-import android.provider.Settings
-import androidx.compose.ui.platform.LocalContext
-
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.formfit.ui.theme.*
 
 @Composable
 fun ExerciseDetailScreen(exercise: Exercise) {
-
-    var setsCompleted by remember { mutableStateOf(0) }
-    val totalSets = 4
-
-    var selectedRestTime by remember { mutableStateOf(60) }
-    var timeLeft by remember { mutableStateOf(60) }
-    var isRunning by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
-    val mediaPlayer = remember {
-        MediaPlayer.create(
-            context,
-            Settings.System.DEFAULT_NOTIFICATION_URI
-        )
-    }
-    DisposableEffect(Unit) {
-        onDispose {
-            mediaPlayer.release()
-        }
-    }
-
-
-
-    // Timer Logic
-    LaunchedEffect(isRunning, timeLeft) {
-
-        if (isRunning && timeLeft > 0) {
-            delay(1000L)
-            timeLeft--
-        }
-
-        if (timeLeft == 0 && isRunning) {
-            isRunning = false
-            mediaPlayer.start()   // 🔔 PLAY SOUND
-        }
-    }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0B1423))
+            .background(BgDark)
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(20.dp)
     ) {
-
+        // 1. Header (Name & Category Tag)
         Text(
-            exercise.name,
-            color = Color.White,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            text = exercise.name,
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = TextWhite
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // 🔥 SET COUNTER
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1B263B)),
-            modifier = Modifier.fillMaxWidth()
+        Box(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(AccentBlue.copy(alpha = 0.2f))
+                .padding(horizontal = 12.dp, vertical = 4.dp)
         ) {
-            Column(Modifier.padding(16.dp)) {
-
-                Text(
-                    "Sets Completed",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-
-                    Button(
-                        onClick = {
-                            if (setsCompleted > 0) setsCompleted--
-                        }
-                    ) { Text("-") }
-
-                    Text(
-                        "$setsCompleted / $totalSets",
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
-
-                    Button(
-                        onClick = {
-                            if (setsCompleted < totalSets) setsCompleted++
-                        }
-                    ) { Text("+") }
-                }
-            }
+            Text(exercise.category.uppercase(), color = AccentBlue, fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔥 REST TIMER CARD
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1B263B)),
-            modifier = Modifier.fillMaxWidth()
+        // ✅ 2. Main Exercise Image in a Glass Container
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp) // Large prominent area
+                .clip(RoundedCornerShape(24.dp))
+                .background(CardDark)
+                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(24.dp)),
+            contentAlignment = Alignment.Center
         ) {
-            Column(Modifier.padding(16.dp)) {
-
-                Text(
-                    "Rest Timer",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // ✅ REST TIME SELECTOR
-                Text("Select Rest Time", color = Color.White)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row {
-                    listOf(30, 60, 90).forEach { time ->
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = {
-                                selectedRestTime = time
-                                timeLeft = time
-                                isRunning = false
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor =
-                                    if (selectedRestTime == time)
-                                        Color(0xFF2A7BFF)
-                                    else
-                                        Color.DarkGray
-                            )
-                        ) {
-                            Text("$time s")
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    "$timeLeft sec",
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row {
-
-                    Button(
-                        onClick = { isRunning = !isRunning }
-                    ) {
-                        Text(if (isRunning) "Pause" else "Start")
-                    }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Button(
-                        onClick = {
-                            isRunning = false
-                            timeLeft = selectedRestTime
-                        }
-                    ) {
-                        Text("Reset")
-                    }
-                }
-            }
+            Image(
+                painter = painterResource(id = exercise.imageRes),
+                contentDescription = "${exercise.name} demonstration",
+                modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Fit
+            )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // 🔥 EXERCISE STEPS
-        Text(
-            "How To Perform:",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        // 3. Info Cards (Reps & Target Muscles)
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            DetailInfoCard("Reps/Sets", exercise.reps, Modifier.weight(1f))
+            DetailInfoCard("Target Muscles", exercise.muscles, Modifier.weight(1f))
+        }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // 4. Execution Steps
+        Text("Execution Steps", color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
 
         exercise.steps.forEachIndexed { index, step ->
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF1B263B)
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp)
-            ) {
-                Text(
-                    "${index + 1}. $step",
-                    color = Color.White,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            StepItem(index + 1, step)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
+    }
+}
+
+// --- HELPER COMPONENTS ---
+
+@Composable
+fun DetailInfoCard(label: String, value: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(CardDark)
+            .border(1.dp, Color.White.copy(alpha = 0.05f), RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(label, color = TextGrey, fontSize = 12.sp)
+            Text(value, color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
+@Composable
+fun StepItem(number: Int, instruction: String) {
+    Row(verticalAlignment = Alignment.Top) {
+        Text(
+            text = "$number.",
+            color = AccentPurple,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            modifier = Modifier.width(28.dp)
+        )
+        Text(
+            text = instruction,
+            color = TextWhite.copy(alpha = 0.9f),
+            fontSize = 16.sp,
+            lineHeight = 22.sp
+        )
+    }
+}
