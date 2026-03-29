@@ -23,95 +23,115 @@ fun DietScreen() {
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
-        // Header
-        Text("Diet Planner 🥗", color = TextWhite, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-
-        // Sleek Allergy Badge
-        Box(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFF10B981).copy(alpha = 0.2f))
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-        ) {
-            Text("Allergy-Safe Mode: 100% Dairy-Free", color = Color(0xFF10B981), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        }
+        // --- HEADER SECTION ---
+        Text("Clinical Nutrition 🥗", color = TextWhite, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text("High-Protein Vegetarian Plans", color = AccentBlue, fontSize = 14.sp)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Goal Selection
-        Text("Fitness Goal", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        // --- GOAL TOGGLE ---
+        Text("Protocol Objective", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            GoalButton("Muscle Gain", selectedGoal == "Muscle Gain", Modifier.weight(1f)) { selectedGoal = it }
-            GoalButton("Fat Loss", selectedGoal == "Fat Loss", Modifier.weight(1f)) { selectedGoal = it }
+            GoalSelector("Muscle Gain", selectedGoal == "Muscle Gain", Modifier.weight(1f)) { selectedGoal = it }
+            GoalSelector("Fat Loss", selectedGoal == "Fat Loss", Modifier.weight(1f)) { selectedGoal = it }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Multi-Option Recipes
-        val breakfast = """
-            Option 1: 2 Moong Dal Chillas + Mint Chutney
-            Option 2: Tofu Bhurji (100g) with 2 Multigrain Roti
-            Option 3: Bowl of Oats with Almond Milk & Chia Seeds
-            Option 4: High-Protein Soya Poha with Peanuts
-            
-            Target: ~25g Protein
-        """.trimIndent()
+        // --- DYNAMIC DIET CONTENT ---
+        if (selectedGoal == "Muscle Gain") {
+            // MUSCLE GAIN PLAN (Caloric Surplus, High Protein with Dairy)
+            MealDisplayCard(
+                mealTime = "🌅 Breakfast (08:00 AM)",
+                macros = "500 kcal • 32g Protein • 55g Carbs • 16g Fat",
+                options = """
+                    • Option A: 2 Stuffed Paneer Parathas with a bowl of fresh Curd (Yogurt).
+                    • Option B: High-Calorie Oats (Oats, 300ml Whole Milk, 1 scoop Whey, Peanut Butter).
+                    • Option C: Paneer Bhurji (150g) with 2 slices of toasted whole-wheat bread.
+                """.trimIndent()
+            )
 
-        val lunch = """
-            Option 1: Soya Chunk Curry (75g) + 1 Cup Brown Rice
-            Option 2: Rajma Masala + Quinoa + Cucumber Salad
-            Option 3: Chole (Chickpeas) + 2 Roti + Vegan Curd
-            Option 4: Dal Tadka + Bhindi Sabzi + 2 Roti
-            
-            Target: ~30g Protein
-        """.trimIndent()
+            MealDisplayCard(
+                mealTime = "🍛 Lunch (01:00 PM)",
+                macros = "650 kcal • 38g Protein • 75g Carbs • 20g Fat",
+                options = """
+                    • Option A: Paneer Butter Masala (150g), 2 Roti, 1 cup Rice, and a glass of Chaas (Buttermilk).
+                    • Option B: Soya Chunk & Mutter (Peas) Curry, Dal Makhani, and Jeera Rice.
+                    • Option C: Rajma (Kidney Beans) with Quinoa and a large bowl of Greek Yogurt.
+                """.trimIndent()
+            )
 
-        val snack = """
-            Option 1: Roasted Makhana & Chana (Handful)
-            Option 2: Peanut Butter on 2 slices Whole Wheat Toast
-            Option 3: Plant-based Protein Shake (with Water/Soy Milk)
-            Option 4: Mixed Sprouts Chaat with Lemon
-            
-            Target: ~15g Protein
-        """.trimIndent()
+            MealDisplayCard(
+                mealTime = "⚡ Pre/Post Workout (05:00 PM)",
+                macros = "300 kcal • 25g Protein • 35g Carbs • 8g Fat",
+                options = """
+                    • Option A: 1 Scoop Whey Protein mixed with 250ml Milk and 1 Banana.
+                    • Option B: Bowl of Greek Yogurt topped with honey, almonds, and granola.
+                    • Option C: Cold Coffee (Milk, Coffee, 1 tsp sugar) and 2 whole-wheat rusk toasts.
+                """.trimIndent()
+            )
 
-        val dinner = if (selectedGoal == "Fat Loss") {
-            """
-            Option 1: Grilled Tofu (150g) with Stir-fry Broccoli
-            Option 2: Clear Moong Dal Soup + Sautéed Veggies
-            Option 3: Soya Kheema (Low Oil) + 1 Roti
-            
-            Low Carb | High Protein
-            """.trimIndent()
+            MealDisplayCard(
+                mealTime = "🍽 Dinner (08:30 PM)",
+                macros = "450 kcal • 30g Protein • 45g Carbs • 15g Fat",
+                options = """
+                    • Option A: Kadai Paneer with capsicum, 2 Roti, and a side salad.
+                    • Option B: Yellow Dal Tadka, 1 cup Rice, and a glass of warm Turmeric Milk before bed.
+                    • Option C: Tofu and Broccoli stir-fry with a light soy-sauce glaze.
+                """.trimIndent()
+            )
         } else {
-            """
-            Option 1: Dal Makhani (No cream/butter) + 2 Roti
-            Option 2: Tofu Peas Masala (Matar Tofu) + Brown Rice
-            Option 3: Mixed Dal + Gobi Aloo + 2 Roti
-            
-            Balanced Muscle Meal
-            """.trimIndent()
+            // FAT LOSS PLAN (Caloric Deficit, High Satiety with Dairy)
+            MealDisplayCard(
+                mealTime = "🌅 Breakfast (08:00 AM)",
+                macros = "300 kcal • 22g Protein • 35g Carbs • 8g Fat",
+                options = """
+                    • Option A: Moong Dal Chilla with 2 tbsp of Low-Fat Curd/Yogurt.
+                    • Option B: 1 Scoop Whey Protein in water with a side of mixed berries.
+                    • Option C: Overnight Oats made with Skim Milk and Chia seeds.
+                """.trimIndent()
+            )
+
+            MealDisplayCard(
+                mealTime = "🍛 Lunch (01:00 PM)",
+                macros = "400 kcal • 28g Protein • 45g Carbs • 12g Fat",
+                options = """
+                    • Option A: Palak Paneer (made with low-fat paneer & minimal oil) and 1 Roti.
+                    • Option B: Large bowl of Sprouts Chaat mixed with 50g roasted paneer cubes.
+                    • Option C: 1 bowl of thin Dal, 1 Roti, and a large cucumber raita (yogurt dip).
+                """.trimIndent()
+            )
+
+            MealDisplayCard(
+                mealTime = "⚡ Snack (05:00 PM)",
+                macros = "150 kcal • 12g Protein • 15g Carbs • 5g Fat",
+                options = """
+                    • Option A: 1 large glass of spiced Chaas (Buttermilk) and roasted Makhana.
+                    • Option B: 100g Cottage Cheese (Paneer) seasoned with black pepper.
+                    • Option C: Black Coffee with a small protein bar.
+                """.trimIndent()
+            )
+
+            MealDisplayCard(
+                mealTime = "🍽 Dinner (08:30 PM)",
+                macros = "350 kcal • 25g Protein • 30g Carbs • 10g Fat",
+                options = """
+                    • Option A: Grilled Paneer Salad (100g Paneer, lettuce, tomatoes, lemon dressing).
+                    • Option B: Clear Lentil Soup and a side of sautéed vegetables.
+                    • Option C: Small portion of Soya Kheema with a side of steamed broccoli.
+                """.trimIndent()
+            )
         }
 
-        // Render Glass Cards
-        DietGlassCard("🌅 Breakfast Options", breakfast)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DietGlassCard("🍛 Lunch Options", lunch)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DietGlassCard("⚡ Pre/Post Workout Snack", snack)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DietGlassCard("🍽 Dinner Options", dinner)
         Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
+// --- REUSABLE COMPONENTS FOR DIET SCREEN ---
+
 @Composable
-fun GoalButton(text: String, isSelected: Boolean, modifier: Modifier, onClick: (String) -> Unit) {
+fun GoalSelector(text: String, isSelected: Boolean, modifier: Modifier, onClick: (String) -> Unit) {
     Box(
         modifier = modifier
             .height(45.dp)
@@ -126,19 +146,34 @@ fun GoalButton(text: String, isSelected: Boolean, modifier: Modifier, onClick: (
 }
 
 @Composable
-fun DietGlassCard(title: String, content: String) {
+fun MealDisplayCard(mealTime: String, macros: String, options: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .padding(bottom = 16.dp)
+            .clip(RoundedCornerShape(20.dp))
             .background(CardDark)
-            .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(24.dp))
+            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
             .padding(20.dp)
     ) {
         Column {
-            Text(title, color = AccentBlue, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(content, color = TextWhite.copy(alpha = 0.85f), fontSize = 15.sp, lineHeight = 24.sp)
+            Text(mealTime, color = AccentBlue, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Macro Breakdown Tag
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color.White.copy(alpha = 0.05f))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(macros, color = TextGrey, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(options, color = TextWhite.copy(alpha = 0.85f), fontSize = 14.sp, lineHeight = 24.sp)
         }
     }
 }
