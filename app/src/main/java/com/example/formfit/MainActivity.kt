@@ -28,7 +28,7 @@ fun FormFitApp() {
         composable("dashboard") { DashboardScreen(navController) }
         composable("diet") { DietScreen() }
         composable("ai_plan") { AiPlanScreen() }
-
+        composable("profile") { ProfileScreen(navController) }
         composable("exercise/{exerciseName}") { backStackEntry ->
             val exerciseName = backStackEntry.arguments?.getString("exerciseName")
             val exercise = exerciseList.find { it.name == exerciseName }

@@ -1,6 +1,7 @@
 package com.example.formfit
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 
 data class Exercise(
     val name: String,
@@ -8,13 +9,15 @@ data class Exercise(
     val muscles: String,
     @DrawableRes val imageRes: Int,
     val category: String,
-    val steps: List<String>
+    val steps: List<String>,
+    @RawRes val videoRes: Int? = null
 )
 
 val exerciseList = listOf(
 
     // 🔴 PUSH DAY (10 Exercises)
-    Exercise("Bench Press", "4 x 8", "Chest, Triceps", R.drawable.bench_press, "Push", listOf("Lie on bench", "Lower bar", "Press upward")),
+    // ✅ FIX: videoRes is now INSIDE the parenthesis!
+    Exercise("Bench Press", "4 x 8", "Chest, Triceps", R.drawable.bench_press, "Push", listOf("Lie on bench", "Lower bar", "Press upward"), videoRes = R.raw.bench_press_video),
     Exercise("Incline Dumbbell Press", "3 x 12", "Upper Chest", R.drawable.incline_press, "Push", listOf("Set incline", "Lower dumbbells", "Press up")),
     Exercise("Shoulder Press", "4 x 10", "Deltoids", R.drawable.shoulder_press, "Push", listOf("Hold dumbbells", "Press up", "Lower slowly")),
     Exercise("Arnold Press", "3 x 12", "Deltoids", R.drawable.arnold_press, "Push", listOf("Rotate wrists while pressing", "Lower slowly")),
@@ -40,7 +43,8 @@ val exerciseList = listOf(
     Exercise("Dumbbell Shrugs", "4 x 15", "Traps", R.drawable.shrugs, "Pull", listOf("Hold heavy dumbbells", "Shrug shoulders straight up", "Hold for one second, then lower")),
 
     // 🟢 LEGS (9 Exercises)
-    Exercise("Barbell Squat", "4 x 8", "Quads, Glutes", R.drawable.squat, "Legs", listOf("Lower body", "Push up")),
+    // ✅ FIX: videoRes is now INSIDE the parenthesis!
+    Exercise("Barbell Squat", "4 x 8", "Quads, Glutes", R.drawable.squat, "Legs", listOf("Lower body", "Push up"), videoRes = R.raw.squat),
     Exercise("Romanian Deadlift", "4 x 10", "Hamstrings", R.drawable.romanian_deadlift, "Legs", listOf("Hinge at hips", "Return upright")),
     Exercise("Bulgarian Split Squat", "3 x 12 each leg", "Quads, Glutes", R.drawable.split_squat, "Legs", listOf("Place back foot on bench", "Lower front leg", "Push up")),
     Exercise("Walking Lunges", "3 x 20 steps", "Quads, Glutes", R.drawable.lunges, "Legs", listOf("Step forward", "Lower knee", "Push forward")),

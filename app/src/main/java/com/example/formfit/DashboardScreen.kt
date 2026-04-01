@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource // ✅ Added import for local images
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
@@ -52,7 +52,7 @@ fun DashboardScreen(navController: NavController) {
                 Text("Hi, ${profile?.name ?: "User"} 👋", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextWhite)
                 Text("Let's crush your goals.", color = TextGrey)
             }
-            Box(modifier = Modifier.size(45.dp).clip(CircleShape).background(CardDark).border(1.dp, TextGrey.copy(0.3f), CircleShape), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(45.dp).clip(CircleShape).background(CardDark).border(1.dp, TextGrey.copy(0.3f), CircleShape).clickable { navController.navigate("profile") }, contentAlignment = Alignment.Center) {
                 Text(profile?.name?.take(1) ?: "U", color = AccentBlue, fontWeight = FontWeight.Bold)
             }
         }
@@ -67,17 +67,33 @@ fun DashboardScreen(navController: NavController) {
 
         Spacer(Modifier.height(24.dp))
 
-        // BMI Hero Glass Card
+        // ✅ FIXED: New BMI Hero Glass Card with the Progress Chart
         val bmi = profile?.bmi ?: 0f
         val (_, bmiText, _) = getBmiDetails(bmi)
 
         GlassCard(modifier = Modifier.fillMaxWidth().height(180.dp), gradient = GlassGradient) {
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-                Column {
-                    Text("Health Status", color = TextWhite.copy(0.8f), fontSize = 14.sp)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left Side: Text Info
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Health Status", color = TextWhite.copy(alpha = 0.8f), fontSize = 14.sp)
                     Text(String.format("%.1f", bmi), color = TextWhite, fontSize = 36.sp, fontWeight = FontWeight.Bold)
-                    Text("BMI: $bmiText", color = TextWhite.copy(0.9f), fontSize = 18.sp)
+                    Text("BMI: $bmiText", color = TextWhite.copy(alpha = 0.9f), fontSize = 18.sp)
                 }
+
+                // Right Side: The Progress Chart
+                val mockHistory = listOf(26.5f, 25.8f, 26.2f, 25.4f, bmi)
+
+                BmiChart(
+                    data = mockHistory,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .padding(start = 16.dp)
+                )
             }
         }
 
@@ -126,7 +142,7 @@ fun DashboardScreen(navController: NavController) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
 
-                    // ✅ FIX: Swapped AsyncImage for standard Image to use local drawables
+                    // Standard Image to use local drawables
                     Image(
                         painter = painterResource(id = exercise.imageRes),
                         contentDescription = exercise.name,

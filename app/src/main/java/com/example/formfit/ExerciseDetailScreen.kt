@@ -1,6 +1,6 @@
 package com.example.formfit
 
-import androidx.compose.foundation.Image // ✅ Added this import
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource // ✅ Added this import
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +49,7 @@ fun ExerciseDetailScreen(exercise: Exercise) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ✅ 2. Main Exercise Image in a Glass Container
+        // ✅ 2. Main Exercise Media Container (Video or Image)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,12 +59,18 @@ fun ExerciseDetailScreen(exercise: Exercise) {
                 .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(24.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = exercise.imageRes),
-                contentDescription = "${exercise.name} demonstration",
-                modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Fit
-            )
+            // Check if this exercise has a video resource attached
+            if (exercise.videoRes != null) {
+                VideoPlayer(videoResId = exercise.videoRes)
+            } else {
+                // Fallback to Image if no video is provided
+                Image(
+                    painter = painterResource(id = exercise.imageRes),
+                    contentDescription = "${exercise.name} demonstration",
+                    modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
