@@ -39,11 +39,15 @@ fun ProfileScreen(navController: NavController) {
     var experience by remember { mutableStateOf("Beginner") }
     var allergy by remember { mutableStateOf("") }
 
+    // ✅ FIX 1: Added email state so we don't lose the user's email during update
+    var email by remember { mutableStateOf("") }
+
     // Load existing data when the screen opens
     LaunchedEffect(Unit) {
         val existingProfile = db.profileDao().getProfile()
         if (existingProfile != null) {
             name = existingProfile.name
+            email = existingProfile.email // ✅ Fetching existing email
             age = existingProfile.age.toString()
             weight = existingProfile.weight.toString()
             height = existingProfile.height.toString()
@@ -122,6 +126,7 @@ fun ProfileScreen(navController: NavController) {
 
                 val updatedProfile = ProfileEntity(
                     name = name,
+                    email = email, // ✅ FIX 1: Passing the email back into the database
                     age = age.toIntOrNull() ?: 0,
                     weight = w,
                     height = h,
@@ -165,12 +170,14 @@ fun GlassTextField(
         label = { Text(label, color = TextGrey) },
         keyboardOptions = KeyboardOptions(keyboardType = if (isNumber) KeyboardType.Number else KeyboardType.Text),
         modifier = modifier.fillMaxWidth().padding(bottom = 16.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        // ✅ FIX 2: Updated to Material 3 OutlinedTextFieldDefaults
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = AccentBlue,
             unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
             focusedTextColor = TextWhite,
             unfocusedTextColor = TextWhite,
-            containerColor = CardDark
+            focusedContainerColor = CardDark,
+            unfocusedContainerColor = CardDark
         ),
         shape = RoundedCornerShape(16.dp)
     )
