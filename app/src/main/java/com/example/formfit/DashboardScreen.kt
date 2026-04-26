@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.formfit.viewmodel.ProfileViewModel
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
@@ -33,13 +35,14 @@ val GlassGradient = Brush.linearGradient(colors = listOf(AccentBlue.copy(alpha =
 val SelectedTabGradient = Brush.linearGradient(colors = listOf(AccentBlue, AccentPurple))
 
 @Composable
-fun DashboardScreen(navController: NavController) {
+fun DashboardScreen(navController: NavController, profileViewModel: ProfileViewModel = viewModel()) {
     val context = LocalContext.current
-    var profile by remember { mutableStateOf<ProfileEntity?>(null) }
+    val profile by profileViewModel.profileState.collectAsState()
     var selectedSplit by remember { mutableStateOf("Push") }
 
-    val db = AppDatabase.getDatabase(context)
-    LaunchedEffect(Unit) { profile = db.profileDao().getProfile() }
+    LaunchedEffect(Unit) {
+        profileViewModel.fetchProfile()
+    }
 
     val currentExercises = exerciseList.filter { it.category == selectedSplit }
 
@@ -102,7 +105,10 @@ fun DashboardScreen(navController: NavController) {
         // Action Buttons Row
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionButton(Icons.Default.List, "Diet", Color(0xFF10B981), Modifier.weight(1f)) { navController.navigate("diet") }
-            ActionButton(Icons.Default.Info, "Stats", Color(0xFF8B5CF6), Modifier.weight(1f)) {}
+
+            // ✅ FIX: Added the navigation route for Stats!
+            ActionButton(Icons.Default.Info, "Stats", Color(0xFF8B5CF6), Modifier.weight(1f)) { navController.navigate("stats") }
+
             ActionButton(Icons.Default.Star, "AI Plan", Color(0xFFEC4899), Modifier.weight(1f)) { navController.navigate("ai_plan") }
         }
 

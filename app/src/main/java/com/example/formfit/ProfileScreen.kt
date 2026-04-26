@@ -22,14 +22,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.formfit.ui.theme.*
+import com.example.formfit.viewmodel.ProfileViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, profileViewModel: ProfileViewModel = viewModel()) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val db = remember { AppDatabase.getDatabase(context) }
+    
+    val profileState by profileViewModel.profileState.collectAsState()
 
     // State variables for our form fields
     var name by remember { mutableStateOf("") }
@@ -44,7 +47,11 @@ fun ProfileScreen(navController: NavController) {
 
     // Load existing data when the screen opens
     LaunchedEffect(Unit) {
-        val existingProfile = db.profileDao().getProfile()
+        profileViewModel.fetchProfile()
+    }
+    
+    LaunchedEffect(profileState) {
+        val existingProfile = profileState
         if (existingProfile != null) {
             name = existingProfile.name
             email = existingProfile.email // ✅ Fetching existing email
@@ -135,8 +142,7 @@ fun ProfileScreen(navController: NavController) {
                     allergy = allergy
                 )
 
-                coroutineScope.launch {
-                    db.profileDao().insertProfile(updatedProfile)
+                profileViewModel.saveProfile(updatedProfile) {
                     Toast.makeText(context, "Profile Updated Successfully!", Toast.LENGTH_SHORT).show()
                     navController.navigate("dashboard") {
                         popUpTo("dashboard") { inclusive = true } // Refresh dashboard

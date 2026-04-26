@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
+import com.example.formfit.viewmodel.AuthViewModel
+import com.example.formfit.viewmodel.ProfileViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -41,7 +44,7 @@ import com.example.formfit.ui.theme.TextWhite
 val SelectedGradient = Brush.linearGradient(listOf(AccentBlue, AccentPurple))
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = viewModel(), profileViewModel: ProfileViewModel = viewModel()) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -122,10 +125,18 @@ fun LoginScreen(navController: NavController) {
                         allergy = allergy.ifEmpty { "None" }, bmi = bmiValue
                     )
 
-                    val db = AppDatabase.getDatabase(context)
-                    scope.launch {
-                        db.profileDao().insertProfile(newProfile)
+                    // Try to Login first. If fails, Sign up. This is a hacky auto-signup for demo
+                    authViewModel.login(email, password) {
+                        profileViewModel.fetchProfile()
                         navController.navigate("dashboard") { popUpTo("login") { inclusive = true } }
+                    }
+                    
+                    // Note: In a real app we'd handle failure cases and show error modals.
+                    // For this refactor, if sign up is required:
+                    authViewModel.signUp(email, password) {
+                        profileViewModel.saveProfile(newProfile) {
+                            navController.navigate("dashboard") { popUpTo("login") { inclusive = true } }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),

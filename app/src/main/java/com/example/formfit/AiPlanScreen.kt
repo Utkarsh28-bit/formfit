@@ -16,22 +16,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.formfit.ui.theme.*
+import com.example.formfit.viewmodel.ProfileViewModel
 
 @Composable
-fun AiPlanScreen() {
+fun AiPlanScreen(profileViewModel: ProfileViewModel = viewModel()) {
     val context = LocalContext.current
-    var profile by remember { mutableStateOf<ProfileEntity?>(null) }
+    
+    val profile by profileViewModel.profileState.collectAsState()
 
     // UI States for the AI Generation
     var isGenerating by remember { mutableStateOf(false) }
     var generatedPlan by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch the profile from your Room Database
+    // Fetch the profile from Firebase
     LaunchedEffect(Unit) {
-        val db = AppDatabase.getDatabase(context)
-        profile = db.profileDao().getProfile()
+        profileViewModel.fetchProfile()
     }
 
     Column(
